@@ -1,9 +1,10 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
+const constants = require("../utils/constants");
 /** 
- * Controller for Singup / Registration!
+ * Controller for Signup / Registration!
 */
-function signup(req, res){
+async function signup(req, res){
 
     
     // userStatus : APPROVED | PENDING | REJECTED
@@ -15,10 +16,10 @@ function signup(req, res){
     var userStatus = req.body.userStatus;
 
     if( !req.body.userStatus ){
-        if( !req.body.userType || req.body.userType == "CUSTOMER"){
-            userStatus = "APPROVED"
+        if( !req.body.userType || req.body.userType == constants.userTypes.customer){
+            userStatus = constants.userStatus.approved ;
         }else{
-            userStatus = "PENDING"
+            userStatus = constants.userStatus.pending ;
         }
     }
 
@@ -32,6 +33,36 @@ function signup(req, res){
         userStatus : userStatus
 
     }
+    /**
+     * Insert rtge Newuser to database
+    */
+   try{
+    const userCreated = await User.create(userObj);
+    console.log("User Created : " , userCreated);
+
+    /**
+     * Return the Response
+    */
+
+    const userCreationResponse = {
+        name : userCreated.name,
+        userID : userCreated.userID,
+        email : userCreated.email,
+        userType : userCreated.userType,
+        userStatus : userCreated.userStatus,
+        createdAt : userCreated.createdAt,
+        updatedAt : userCreated.updatedAt,
+        
+    }
+
+    res.status(201).send(userCreationResponse);
+}catch(err){
+    console.log("Error while Creating New User", err);
+    res.status(500).send({
+        message : "Some Internal Error while Inserting New user!",
+    })
+
+}
 
 }
 
