@@ -1,68 +1,60 @@
-/**
- * This file will Hold the Schema for the User Resourcee !
-*/
+ /**
+ * This file will hold the schema for the User resource
+ */
 
 const mongoose = require("mongoose");
 
-const userSchema = new  mongoose.Schema({
+const userSchema = new mongoose.Schema({
 
     /**
-     * Name , UserID , password , email , createdAt , 
-     * userType [ ADMIN | ENGINEER | CUSTOMER ],
-     * userStatus { Pending | Approved | Rejected}
+     * name, userId, password, email, createdAt , updatedAt
+     * userType [ ADMIN | ENGINEER | CUSTOMER ] , 
+     * userStatus [ Pending | Approved | Rejected ]
      */
     name : {
         type : String,
         required : true
     },
-
-    userID : {
+    userId : {
         type : String,
         required : true,
-        unique : true,
+        unique : true
     },
-
-    password : {
+    password :{
         type : String,
-        required : true,
+        required : true
     },
-
     email : {
         type : String,
         required : true,
         lowercase : true,
-        minlength : true,
-        unique : true,
+        minLength : 10,
+        unqiue : true
     },
-
     createdAt : {
-        type : Date , 
+        type : Date,
         immutable : true,
-        default : ()=> {
+        default : ()=>{
             return Date.now();
         }
     },
-
     updatedAt : {
-        type : Date ,
-        default : () => {
+        type : Date,
+        default : ()=>{
             return Date.now();
         }
     },
-
     userType : {
-         type : String ,
-         required : true ,
-         default : "CUSTOMER",
-    },
-
-    userStatus : {
-        type :String,
+        type : String,
         required : true,
-        default :"APPROVED"
+        default : "CUSTOMER"
+    },
+    userStatus : {
+        type : String,
+        required : true,
+        default : "APPROVED"
     }
 
 });
 
-
-module.exports = mongoose.model("User" , userSchema);
+module.exports = mongoose.model("User", userSchema);
