@@ -3,7 +3,8 @@
  * varifying the request body
  */
 
- const User = require("../models/user.model")
+ const User = require("../models/user.model");
+ const constant = require("../utils/constants");
 
  validateSignupRequest = async (req,res, next) =>{
      //Validate if userName exists
@@ -20,9 +21,9 @@
          })
      }
  
-     /**
-      * Valiate if the userIs is already not preset
-      */
+    /**
+    * Valiate if the userIs is already not preset
+    */
      const user = await User.findOne({userId : req.body.userId});
  
      if(user!=null){
@@ -44,12 +45,12 @@
     */
      if( !req.body.email ){
         return res.status(400).send({
-            message : "Failed ! Email is Not provided !"
+            message : "Failed !User Email is Not provided !"
         })
     }
 
     /**
-     * Valiate if the userIs is already not preset
+     * Valiate if the u is already not preset
      */
     const email = await User.findOne({email : req.body.email});
 
@@ -62,8 +63,9 @@
     /*
         validate the "userType" if it already Exists
     */
-
-    if( !req.body.userType ){
+    const userType = req.body.userType;
+    const userTypes = [ constant.userTypes.customer , constant.userTypes.admin , constant.userTypes.engineer ]
+    if( userType && !userTypes.includes( userType )){
         return res.status(400).send({
             message : "Failed ! UserType, is Not provided !"
         })
