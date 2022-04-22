@@ -19,6 +19,7 @@ mongoose.connect(dbConfig.DB_URL, ()=>{
 
 
 require('./routes/authRoutes')(app);
+require('./routes/userRoutes')(app);
 /**
  * Start the express server
  */

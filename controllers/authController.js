@@ -49,8 +49,12 @@ exports.signup = async (req, res) => {
         updatedAt : userCreated.updatedAt
     }
 
-    res.status(201).send(userCreationResponse);
+    res.status(201).send({
+        msg : "User , Added Successully !",
+        user : userCreationResponse
+    });
 } catch(err){
+    
     console.error("Error while creating new user", err);
     res.status(500).send({
         message : "some internal error while inserting new user"
@@ -103,12 +107,15 @@ exports.signin = async (req, res) =>{
 
     //Send the response back
     res.status(200).send({
-        name : user.name,
-        userId : user.userId,
-        email : user.email,
-        userType : user.userType,
-        userStatus : user.userStatus,
-        accessToken : token
+        msg : "User login Successfully !",
+        user : {
+            name : user.name,
+            userId : user.userId,
+            email : user.email,
+            userType : user.userType,
+            userStatus : user.userStatus,
+            accessToken : token
+        }
     })
 
 };

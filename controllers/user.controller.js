@@ -50,4 +50,4 @@ async function findAllUsers(req, res){
  *   - only ADMIN shouldd be allowed to do this !
  */
 
-module.exports = { findAllUsers , }
+module.exports = { findAllUsers  }
