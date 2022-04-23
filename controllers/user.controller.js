@@ -34,20 +34,33 @@ async function findAllUsers(req, res){
             message : "Internal Error while Fetching all Users."
         })
     }
-
- 
-    
-
 }
 
 
 /**
  * Fetch the User based on the UserID
  */
+async function findUserByID(req, res){
+    const userIDReq = req.params.userId; // reading from the Request Parameter
+
+    const user = await  User.find({ userId : userIDReq });
+
+    if( user ){
+        return res.status(200).send({
+            message : "Successfully Fetched  user !",
+            users : objectConvertor.userResponse(user)// user Password will also be Returned in response.
+        })
+    }else{
+        return res.status(200).send({
+            message : "user with id "+ userIDReq + "doesn't exist",
+        })
+    }
+
+}
 
 /** 
  * Update the User - Status , userType
  *   - only ADMIN shouldd be allowed to do this !
  */
 
-module.exports = { findAllUsers  }
+module.exports = { findAllUsers , findUserByID }

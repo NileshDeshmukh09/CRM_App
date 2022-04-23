@@ -12,4 +12,11 @@ module.exports = (app) =>{
      * GET - 127.0.0.1:8080/crm/api/v1/users/
     */
    app.get("/crm/api/v1/users",[authJWT.verifyToken , authJWT.isAdmin] , userController.findAllUsers)
+
+   /**
+     * GET - 127.0.0.1:8080/crm/api/v1/users/{id}
+    */
+   app.get("/crm/api/v1/users/:userId", [authJWT.verifyToken], userController.findUserByID )
+
+   
 }
