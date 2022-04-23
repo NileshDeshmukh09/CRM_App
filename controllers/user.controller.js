@@ -17,12 +17,51 @@ const objectConvertor = require("../utils/objectConvertor")
 async function findAllUsers(req, res){
 
     /**
+     * Read the data from the Query parameters
+    */
+   const nameReq = req.query.name;
+   const userStatusReq = req.query.userStatus;
+   const userTypeReq = req.query.userType;
+
+   const mongoQueryObj = {};
+
+   if(nameReq && userStatusReq && userTypeReq){
+
+       mongoQueryObj.name = nameReq;
+       mongoQueryObj.userStatus = userStatusReq;
+       mongoQueryObj.userType = userTypeReq;
+
+   }else if( userStatusReq && userTypeReq ){
+
+       mongoQueryObj.userStatus = userStatusReq;
+       mongoQueryObj.userType = userTypeReq;
+
+   }else if( nameReq && userStatusReq ){
+
+       mongoQueryObj.name = nameReq;
+       mongoQueryObj.userStatus = userStatusReq;
+
+   }else if(nameReq ){
+
+        mongoQueryObj.name = nameReq;
+
+   }else if(userStatusReq ){
+       
+        mongoQueryObj.userStatus = userStatusReq;
+
+   }else if(userTypeReq ){
+        mongoQueryObj.userType = userTypeReq;
+   }
+
+   console.log(mongoQueryObj);
+
+    /**
      * Write the code here to fetch all the Users from the DB.
      * 
      * Fetch the User Documents from the user Collection
      */
     try {
-        const users  = await User.find();
+        const users  = await User.find(mongoQueryObj);
         return res.status(200).send({
             message : "Successfully Fetched All users !",
             users : objectConvertor.userResponse(users)// user Password will also be Returned in response.
@@ -35,7 +74,6 @@ async function findAllUsers(req, res){
         })
     }
 }
-
 
 /**
  * Fetch the User based on the UserID
@@ -61,6 +99,33 @@ async function findUserByID(req, res){
 /** 
  * Update the User - Status , userType
  *   - only ADMIN shouldd be allowed to do this !
+ * 
+ * ADMIN  - name , userStatus , userType
  */
 
-module.exports = { findAllUsers , findUserByID }
+function updateUser(req, res){
+    /**
+     * One of the ways of Updating
+     */
+    try{
+        const userIDReq = req.params.userId;
+        const user = User.findOneAndUpdate({userId : userIDReq} ,{
+            name : req.body.name,
+            userStatus : req.body.userStatus,
+            userType : req.body.userType,
+        }).exec();
+
+        console.log("UserStatus : ", req.body.userStatus)
+
+        res.status(200).send({
+            message : "User Record Updated Successfully !"
+        })
+    }catch(err){
+        console.log(err);
+        res.status(500).send({
+            message : "Internal Server Error while updating !"
+        })
+    }
+}
+
+module.exports = { findAllUsers , findUserByID , updateUser }
