@@ -3,6 +3,8 @@ const serverConfig = require("./configs/server.config");
 const mongoose = require("mongoose");
 const dbConfig = require("./configs/db.config");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const User = require("./models/user.model")
 
 
 const app = express();
@@ -13,7 +15,31 @@ app.use(bodyParser.urlencoded({extended:true}));
  */
 mongoose.connect(dbConfig.DB_URL, ()=>{
     console.log("MongoDB connected");
+    // Initailization
+    init();
 })
+
+async function init(){
+
+    var user = await User.findOne({ userId : "admin" });
+
+    if( user ){
+        return;
+    }else{
+        
+        /**
+         * Create the ADMIN user
+        */
+       const user = await User.create({
+           name  : "Vish",
+           userId : "admin",
+           email : "nileshDesh@gmail.com",
+           userType : "ADMIN",
+           password : bcrypt.hashSync("Welcome00123" , 8)
+       });
+       console.log("ADMIN User is Created !")
+    }
+}
 
 
 

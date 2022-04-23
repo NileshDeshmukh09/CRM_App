@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../configs/auth.config");
+const User = require("../models/user.model");
+const constants = require("../utils/constants");
 /**
  * Authentication
  *     
@@ -38,8 +40,34 @@ function verifyToken(req, res , next){
     })
 };
 
+/**
+ * If the passed Access token is of ADMIN or Not
+ */
+async function isAdmin(req, res , next){
+    /**
+     * Fetch the user from the DB using the userID
+     */
+    const user =await User.findOne({ userId : req.userId});
+
+    /**
+     * Check whhat is the UserType
+     */
+    
+
+    if(user && user.userType === constants.userTypes.admin){
+        console.log("This is ADMIN User !");
+        next();
+    }else{
+        res.status(403).send({
+            message : "Require ADMIN Role",
+        })
+    }
+
+}
+
 const authJWT = {
-    verifyToken : verifyToken
+    verifyToken : verifyToken,
+    isAdmin : isAdmin,
 }
 
 module.exports = authJWT;
