@@ -3,6 +3,7 @@
  */
 
 const mongoose = require("mongoose");
+const dbConfig = require("../configs/db.config");
 
 const userSchema = new mongoose.Schema({
 
@@ -11,6 +12,7 @@ const userSchema = new mongoose.Schema({
      * userType [ ADMIN | ENGINEER | CUSTOMER ] , 
      * userStatus [ Pending | Approved | Rejected ]
      */
+    
     name : {
         type : String,
         required : true
@@ -30,7 +32,7 @@ const userSchema = new mongoose.Schema({
         lowercase : true,
         minLength : 10,
         unqiue : true
-    },
+    }, 
     createdAt : {
         type : Date,
         immutable : true,
@@ -58,3 +60,5 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("User", userSchema);
+
+

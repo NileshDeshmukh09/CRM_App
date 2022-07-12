@@ -22,11 +22,11 @@
      }
  
     /**
-    * Valiate if the userIs is already not preset
+    * Valiate if the userID is already not preset
     */
      const user = await User.findOne({userId : req.body.userId});
- 
-     if(user!=null){
+  
+     if(user != null){
          return res.status(400).send({
              message : "Failed !  User Id already exist"
          })
@@ -67,7 +67,7 @@
     const userTypes = [ constant.userTypes.customer , constant.userTypes.admin , constant.userTypes.Engineer ]
     if( userType && !userTypes.includes( userType )){
         return res.status(400).send({
-            message : "Failed ! UserType, is Not provided !"
+            message : "Failed ! UserType, is Not Correctly provided !"
         })
     }
 

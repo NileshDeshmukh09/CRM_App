@@ -4,11 +4,11 @@
 
 const User = require("../models/user.model");
 const objectConvertor = require("../utils/objectConvertor")
-
+ 
 /**
  * Fetch the list of all the Users
- *   - Only ADMIN is allowed to call this method 
- *   - ADMIN should be able to filter based on :
+ *   - Only ADMIN is allowed to call this method - DONE
+ *   - ADMIN should be able to filter based on : 
  *     1. Name
  *     2. userType
  *     3. userStatus
@@ -64,7 +64,7 @@ async function findAllUsers(req, res){
         const users  = await User.find(mongoQueryObj);
         return res.status(200).send({
             message : "Successfully Fetched All users !",
-            users : objectConvertor.userResponse(users)// user Password will also be Returned in response.
+            users : objectConvertor.userResponse(users)// user Password will not be Returned in response.
         });
     } catch (error) {
         console.log(err);
@@ -81,12 +81,22 @@ async function findAllUsers(req, res){
 async function findUserByID(req, res){
     const userIDReq = req.params.userId; // reading from the Request Parameter
 
+    /**
+     * Here , I have not used findOne instead of find , 
+     *  
+     *      If I use findOne : It would have given me just One Entries 
+     *      When I use find : , it will return me one Entries , but in the form of Array,
+     *           I already have one Method which converts the array objects 
+     *           and transform into the array of objects , which Okay for us !
+     */
     const user = await  User.find({ userId : userIDReq });
 
     if( user ){
         return res.status(200).send({
             message : "Successfully Fetched  user !",
+            
             users : objectConvertor.userResponse(user)// user Password will also be Returned in response.
+
         })
     }else{
         return res.status(200).send({

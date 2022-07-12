@@ -4,7 +4,7 @@
  */
 
 // define the routes - REST endpoints for user registration
-const authController = require("../controllers/authController")
+const authController = require("../controllers/auth.controller");
 const {verifySignUp} = require("../middlewares");
 module.exports = (app)=>{
     

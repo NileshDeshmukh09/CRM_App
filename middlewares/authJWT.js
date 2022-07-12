@@ -7,7 +7,7 @@ const constants = require("../utils/constants");
  *     
  *      - If the token passed is valid or Not
  * 
- *  1. If no token is passwed in the userheader - Not Allowed 
+ *  1. If no token is passwed in the request header - Not Allowed 
  *  2. If token is passed : Authenticated
  *         if correct allow , else reject
  */

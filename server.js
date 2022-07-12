@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended:true}));
  * Setup the mongodb connection and create on ADMIN user
  */
 mongoose.connect(dbConfig.DB_URL, ()=>{
-    console.log("MongoDB connected");
+    console.log("MongoDB connected ");
     // Initailization
     init();
 })
@@ -44,8 +44,8 @@ async function init(){
 
 
 
-require('./routes/authRoutes')(app);
-require('./routes/userRoutes')(app);
+require('./routes/auth.routes')(app);
+require('./routes/user.routes')(app);
 /**
  * Start the express server
  */

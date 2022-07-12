@@ -50,3 +50,5 @@ const ticketSchema = new mongoose.Schema({
          */
     }
 })
+
+module.exports = mongoose.model("Ticket" , ticketSchema);
