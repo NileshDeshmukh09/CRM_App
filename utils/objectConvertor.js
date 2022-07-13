@@ -17,5 +17,19 @@ function userResponse(users){
     return usersResponse;
 }
 
+function ticketResponse ( ticket ){
+    return {
+        title : ticket.title,
+        description : ticket.description,
+        ticketPriority : ticket.ticketPriority,
+        status : ticket.status,
+        reporter : ticket.reporter,
+        assignee : ticket.assignee,
+        id : ticket._id,
+        createdAt : ticket.createdAt,
+        updatedAt : ticket.updatedAt
+    }
+}
 
-module.exports = { userResponse }
+
+module.exports = { userResponse , ticketResponse }

@@ -35,7 +35,7 @@ exports.signup = async (req, res) => {
     try {
         const userCreated = await User.create(userObjToBeStoredInDB);
 
-        console.log("user created ", userCreated);
+        console.log("user created : ", userCreated);
 
         /**
          * Return the response
