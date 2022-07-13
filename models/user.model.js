@@ -55,6 +55,16 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true,
         default : "APPROVED"
+    },
+    ticketsCreated : {
+        type : [mongoose.SchemaTypes.ObjectId],
+        ref :"Ticket" /* Collection Name */
+        /* One to Many Relationship between the Ticket's and the User */
+    },
+
+    ticketAssigned : {
+        type : [mongoose.SchemaTypes.ObjectId],
+        ref : "Ticket"
     }
 
 });
