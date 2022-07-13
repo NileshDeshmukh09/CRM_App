@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema({
         /* One to Many Relationship between the Ticket's and the User */
     },
 
-    ticketAssigned : {
+    ticketsAssigned : {
         type : [mongoose.SchemaTypes.ObjectId],
         ref : "Ticket"
     }
