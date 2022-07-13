@@ -46,9 +46,12 @@ async function init(){
 
 require('./routes/auth.routes')(app);
 require('./routes/user.routes')(app);
+require('./routes/ticket.routes')(app);
+
 /**
  * Start the express server
  */
+
 app.listen(serverConfig.PORT, () => {
     console.log("Application has started on the port ", serverConfig.PORT );
 })

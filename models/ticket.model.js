@@ -58,6 +58,13 @@ const ticketSchema = new mongoose.Schema({
          *      we want the time at which the ticket is created !, so the 1st one ensure that the time at which the ticket          
          *      is  created , that time getting stored )
          */
+    },
+
+    updatedAt : {
+        type : Date,
+        default : () => {
+            return Date.now();
+        }
     }
 })
 

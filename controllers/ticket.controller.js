@@ -33,7 +33,7 @@ exports.createTicket =async ( req, res ) => {
 
     return res.status(201).send({
          msg : "Ticket , created Successfully !",
-         ticket : objectConvertor.ticketResponse(ticket)
+         ticket : objectConvertor.ticketResponse( ticket )
     })
 
 }catch(error){
