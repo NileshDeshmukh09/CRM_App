@@ -62,12 +62,9 @@ exports.createTicket = async (req, res) => {
                return res.status(201).send({
                     msg: "Ticket , created Successfully !",
                     ticket: objectConvertor.ticketResponse(ticket)
-               })
-     
-
+               })   
           }
-
-         
+        
      } catch (error) {
           console.log(error);
 
@@ -75,6 +72,20 @@ exports.createTicket = async (req, res) => {
                message: "Some Internal Error "
           })
      }
-
 }
 
+/**
+ * API to fetch all the Tickets
+ */
+
+exports.getAllTickets =async ( req, res ) => {
+
+    /**
+     * I want to get the list of all the tickets
+     */
+     const queryObj = {}; //  This I will use later.
+     const tickets = await Ticket.find(queryObj);
+
+     return res.status(200).send(objectConvertor.ticketListResponse(tickets));
+
+}
