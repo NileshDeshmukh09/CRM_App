@@ -133,9 +133,70 @@ exports.getAllTickets =async ( req, res ) => {
            });
      }
 
-     return res.status(200).send(objectConvertor.ticketListResponse(tickets));
-     
-     
+     return res.status(200).send(objectConvertor.ticketListResponse(tickets));    
 
+}
+
+/**
+ * Controller to fetch the Tickets based on ID's 
+ */
+
+exports.getOneTicket = async ( req , res ) => {
+
+     const ticket = await Ticket.findOne({
+          _id : req.params.id
+     });
+
+     res.status(200).send(objectConvertor.ticketResponse(ticket));
+}
+
+/**
+ * Controller to Update the Ticket
+ */
+
+exports.updateTicket = async ( req , res ) => {
+
+   /**
+    * Check the Ticket exists 
+    */
+   const ticket = await Ticket.findOne({
+      _id : req.params.id
+   });
+   
+   if( ticket == null ){
+     return res.status(200).send({
+          message : "Ticket doesn't exist "
+     })
+   }
+
+   /**
+    * Only the Ticket Requester be allowed to update the Ticket
+    */
+   const user = await User.findOne({
+     userId : req.userId
+   })
+
+   if( !user.ticketsCreated.includes( req.params.id ) ){
+     return res.status(403).send({
+          message : "Only Owner of the Ticket is allowed to Update Ticket "
+     })
+   }
+   /**
+    * Update the Attributes of the Saved Ticket 
+    */
+   ticket.title = ( req.body.title != undefined ) ? req.body.title : ticket.title;
+   ticket.description = ( req.body.description != undefined ) ? req.body.description : ticket.description;
+   ticket.ticketPriority = ( req.body.ticketPriority != undefined ) ? req.body.ticketPriority : ticket.ticketPriority;
+   ticket.status = ( req.body.status != undefined ) ? req.body.status : ticket.status;
+
+   /**
+    * Saved the Changed Ticket
+    */
+   const updatedTicket = await ticket.save();
+
+   /**
+    * Return the Updated Ticket
+    */
+   return res.status(200).send(objectConvertor.ticketResponse(updatedTicket));
 }
 
