@@ -21,7 +21,7 @@ exports.createTicket = async (req, res) => {
       */
      try {
           const engineer = await User.findOne({
-               userType: constants.userTypes.Engineer,
+               userType: constants.userTypes.engineer,
                userStatus: constants.userStatus.approved,
           })
 
@@ -86,7 +86,7 @@ exports.createTicket = async (req, res) => {
  * Depending on the user I need to return different list of tickets 
  * 
  * 1. ADMIN    - Return all tickets.
- * 2. ENGINEER - All the tickets, either created or Assigned.
+ * 2. ENGINEER - All the tickets, either created or Assigned by him/her.
  * 3. CUSTOMER - ALl the tickets created by him.
  */
 
@@ -97,21 +97,32 @@ exports.getAllTickets = async (req, res) => {
 
      const queryObj = {};
 
-     if( req.query.status != undefined ){
-          queryObj.status = req.query.status;
-     };
 
      const user = await User.findOne({ userId: req.userId });
 
      /**
       * If ADMIN , can able to see all the tickets created 
       */
-     if(user.userType === constants.userTypes.admin){
-         /**
-          * Return all the ticket 
-          * No need to change in the QueryObj
-          */
-     }else if( user.userType == constants.userTypes.customer ){
+     if (user.userType === constants.userTypes.admin) {
+          /**
+           * Return all the ticket 
+           * No need to change in the QueryObj
+           */
+     }
+     else if (user.userType == constants.userTypes.engineer) {
+          /**
+           * Get all the tickets Created or Assigned !
+           */
+
+          /* Have to Implement the feature of Engineer also create a ticket */
+          // queryObj._id = {
+          //      $in: user.ticketsCreated /* Array's of TicketID's */
+          // };
+          // ----
+          queryObj.assignee = req.userId;
+
+     }
+     else if (user.userType == constants.userTypes.customer) {
 
           /**
            * if CUSTOMER ,should get ticket created by Him.
@@ -127,30 +138,26 @@ exports.getAllTickets = async (req, res) => {
           }
      }
 
-     
-     try{
-          
-          console.log(queryObj);
-          const tickets = await Ticket.find(queryObj);
+     if (req.query.status != undefined) {
+          queryObj.status = req.query.status;
+     };
 
-          if(tickets == null || tickets.length == 0){
-               return res.status(200).send({
-                    message : `No Tickets Found with status = ${queryObj.status}!`
-               })
-          }
 
+     console.log(queryObj);
+     const tickets = await Ticket.find(queryObj);
+     console.log("tickets.length : ", tickets.length);
+
+     if (tickets == null || tickets.length == 0) {
           return res.status(200).send({
-               msg : `SUCCESS !,  ${ user.userType } | ${user.userId} , Fetched All Tickets !`,
-               tickets : objectConvertor.ticketListResponse(tickets)
-          });
+               message: `No Tickets Found with status = ${queryObj.status} !`
+          })
      }
-     catch(error){
-          console.log(error);
-          res.status(500).send({
-               msg : "Internal Server Error !",
-          });
-     }
-   
+
+     return res.status(200).send({
+          msg: `SUCCESS !,  ${user.userType} | ${user.userId} , Fetched All Tickets !`,
+          tickets: objectConvertor.ticketListResponse(tickets)
+     });
+
      /** 
           const tickets = [];
           var count = 0;
@@ -182,6 +189,11 @@ exports.getOneTicket = async (req, res) => {
 
 /**
  * Controller to Update the Ticket
+ * 
+ * TODO : 
+ * 
+ * 1. Assignee Engineer should be able to update the Ticket
+ * 
  */
 
 exports.updateTicket = async (req, res) => {
@@ -210,7 +222,14 @@ exports.updateTicket = async (req, res) => {
                userId: req.userId
           });
 
-          if (!user.ticketsCreated.includes(req.params.id)) {
+          /**
+           * Only checking for the user who has created the ticket
+           * 
+           * 1. ADMIN
+           * 2. ENGINEER
+           */
+
+          if ( (user.ticketsCreated == undefined || !user.ticketsCreated.includes(req.params.id)) && !(user.userType == constants.userTypes.admin )&& !(ticket.assignee == req.userId) ) {
                return res.status(403).send({
                     message: "Only Owner of the Ticket is allowed to Update Ticket "
                })

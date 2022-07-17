@@ -113,22 +113,30 @@ async function findUserByID(req, res){
  * ADMIN  - name , userStatus , userType
  */
 
-function updateUser(req, res){
+ async function updateUser(req, res){
     /**
      * One of the ways of Updating
      */
     try{
         const userIDReq = req.params.userId;
-        const user = User.findOneAndUpdate({userId : userIDReq} ,{
+        const user =await User.findOneAndUpdate({userId : userIDReq} ,{
             name : req.body.name,
             userStatus : req.body.userStatus,
             userType : req.body.userType,
         }).exec();
 
-        console.log("UserStatus : ", req.body.userStatus)
+        console.log("UserStatus : ", req.body.userStatus);
+        console.log(user);
 
         res.status(200).send({
-            message : "User Record Updated Successfully !"
+            message : "User Record Updated Successfully !",
+            user : {
+                name : req.body.name,
+                userId : user.userId,
+                email : user.email,
+                userType :req.body.userType,
+                userStatus : req.body.userStatus,
+            }
         })
     }catch(err){
         console.log(err);

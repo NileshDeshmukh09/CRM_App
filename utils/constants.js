@@ -7,7 +7,7 @@ module.exports = {
     userTypes : {
         customer : "CUSTOMER",
         admin : "ADMIN",
-        Engineer : "ENGINEER"
+        engineer : "ENGINEER"
     },
 
     userStatus : {
@@ -19,7 +19,8 @@ module.exports = {
     ticketStatus : {
         open : "OPEN",
         closed : "CLOSED",
-        blocked : "BLOCKED"
+        blocked : "BLOCKED",
+        inProgress : "IN_PROGRESS",
     },
 
     ticketPriority : {

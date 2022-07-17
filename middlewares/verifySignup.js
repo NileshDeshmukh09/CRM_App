@@ -64,7 +64,7 @@
         validate the "userType" if it already Exists
     */
     const userType = req.body.userType;
-    const userTypes = [ constant.userTypes.customer , constant.userTypes.admin , constant.userTypes.Engineer ]
+    const userTypes = [ constant.userTypes.customer , constant.userTypes.admin , constant.userTypes.engineer ]
     if( userType && !userTypes.includes( userType )){
         return res.status(400).send({
             message : "Failed ! UserType, is Not Correctly provided !"
