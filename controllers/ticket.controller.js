@@ -228,7 +228,16 @@ exports.updateTicket = async (req, res) => {
            * 1. ADMIN
            * 2. ENGINEER
            */
+          console.log(ticket.assignee);
 
+          /**
+           * If the ticket is not assigned any engineer, any engineer
+           * can self assign themselves the given ticket.
+           */
+          if( ticket.assignee == undefined ){
+               ticket.assignee = req.userId;
+          }
+          console.log(req.userId);
           if ( (user.ticketsCreated == undefined || !user.ticketsCreated.includes(req.params.id)) && !(user.userType == constants.userTypes.admin )&& !(ticket.assignee == req.userId) ) {
                return res.status(403).send({
                     message: "Only Owner of the Ticket is allowed to Update Ticket "
