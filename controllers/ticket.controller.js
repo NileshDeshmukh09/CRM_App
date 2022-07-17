@@ -114,7 +114,18 @@ exports.getAllTickets = async (req, res) => {
            * Get all the tickets Created or Assigned !
            */
 
-          /* Have to Implement the feature of Engineer also create a ticket */
+          /* Have to Implement the feature of Engineer also create a ticket 
+
+          APPROACH 1 : $or --------
+
+          APPROACH 2 : in the IN clause put both the lists 
+
+                    ticketsCreated
+                    ticketsAssigned
+
+          */
+
+          
           // queryObj._id = {
           //      $in: user.ticketsCreated /* Array's of TicketID's */
           // };
@@ -259,7 +270,7 @@ exports.updateTicket = async (req, res) => {
           if( user.userType == constants.userTypes.admin ){
                ticket.assignee = req.body.assignee != undefined ? req.body.assignee : ticket.assignee ;
           }
-          
+
           /** 
           * Saved the Changed Ticket
           */
