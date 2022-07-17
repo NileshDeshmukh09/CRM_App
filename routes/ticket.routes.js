@@ -13,9 +13,15 @@ module.exports = ( app ) => {
      */
     app.get("/crm/api/v1/tickets" ,[ authJWT.verifyToken ], ticketController.getAllTickets );
 
-
     /**
      * GET - 127.0.0.8080/crm/api/v1/tickets/:id
      */
     app.get("/crm/api/v1/tickets/:id" ,[ authJWT.verifyToken ], ticketController.getOneTicket  );
+
+    /**
+     * PUT - 127.0.0.8080/crm/api/v1/tickets/:id
+     */
+    app.put("/crm/api/v1/tickets/:id" ,[ authJWT.verifyToken ], ticketController.updateTicket  );
+
+
 }

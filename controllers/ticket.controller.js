@@ -41,10 +41,10 @@ exports.createTicket = async (req, res) => {
            * Find Out the Customer
            */
 
-          if( ticket ){
+          if (ticket) {
 
-               const user = await  User.findOne({
-                    userId : req.userId
+               const user = await User.findOne({
+                    userId: req.userId
                })
                /**
                 * Update the Customer
@@ -62,14 +62,14 @@ exports.createTicket = async (req, res) => {
                return res.status(201).send({
                     msg: "Ticket , created Successfully !",
                     ticket: objectConvertor.ticketResponse(ticket)
-               })   
+               })
           }
-        
+
      } catch (error) {
           console.log(error);
 
           return res.status(500).send({
-               message: "Some Internal Error "
+               message: "Some Internal Server Error "
           })
      }
 }
@@ -77,32 +77,80 @@ exports.createTicket = async (req, res) => {
 /**
  * API to fetch all the Tickets
  * 
- * Allow the user to filter based on States
+ * Allow the user to filter based on States , only the ticket creatar should fetch the tickets
  * 
  * TODO Extension :
  *   - using query param , allow the user to
  *     filter the list of tickets based on status
+ * 
+ * Depending on the user I need to return different list of tickets 
+ * 
+ * 1. ADMIN    - Return all tickets.
+ * 2. ENGINEER - All the tickets, either created or Assigned.
+ * 3. CUSTOMER - ALl the tickets created by him.
  */
 
-exports.getAllTickets =async ( req, res ) => {
-
-     
-
-
-    
-
-    /**
+exports.getAllTickets = async (req, res) => {
+     /**
      * I want to get the list of all the tickets
      */
-     console.log(req.userId)
-     const user = await User.findOne({userId : req.userId});
-     console.log("Ticket : ",user);
 
-     if( user.ticketsCreated ==  null || user.ticketsCreated.length == 0 ){
-          return  res.status(200).send({
-               message : "No tickets created by You !!!"
-          })
+     const queryObj = {};
+
+     if( req.query.status != undefined ){
+          queryObj.status = req.query.status;
+     };
+
+     const user = await User.findOne({ userId: req.userId });
+
+     /**
+      * If ADMIN , can able to see all the tickets created 
+      */
+     if(user.userType === constants.userTypes.admin){
+         /**
+          * Return all the ticket 
+          * No need to change in the QueryObj
+          */
+     }else if( user.userType == constants.userTypes.customer ){
+
+          /**
+           * if CUSTOMER ,should get ticket created by Him.
+           */
+          if (user.ticketsCreated == null || user.ticketsCreated.length == 0) {
+               return res.status(200).send({
+                    message: "No tickets created by You !!!"
+               })
+          }
+
+          queryObj._id = {
+               $in: user.ticketsCreated /* Array's of TicketID's */
+          }
      }
+
+     
+     try{
+          
+          console.log(queryObj);
+          const tickets = await Ticket.find(queryObj);
+
+          if(tickets == null || tickets.length == 0){
+               return res.status(200).send({
+                    message : `No Tickets Found with status = ${queryObj.status}!`
+               })
+          }
+
+          return res.status(200).send({
+               msg : `SUCCESS !,  ${ user.userType } | ${user.userId} , Fetched All Tickets !`,
+               tickets : objectConvertor.ticketListResponse(tickets)
+          });
+     }
+     catch(error){
+          console.log(error);
+          res.status(500).send({
+               msg : "Internal Server Error !",
+          });
+     }
+   
      /** 
           const tickets = [];
           var count = 0;
@@ -117,34 +165,16 @@ exports.getAllTickets =async ( req, res ) => {
           })
      */
 
-     
-     const tickets = await Ticket.find({
-          _id: {
-               $in : user.ticketsCreated /* Array's of TicketID's */
-          }
-     });
-
-     const status = req.query.status;
-
-     if(status === constants.ticketStatus.open){
-          return res.status(200).send({
-               message : "Successfully Fetched All users !",
-               users : objectConvertor.ticketListResponse(tickets)// user Password will not be Returned in response.
-           });
-     }
-
-     return res.status(200).send(objectConvertor.ticketListResponse(tickets));    
-
 }
 
 /**
  * Controller to fetch the Tickets based on ID's 
  */
 
-exports.getOneTicket = async ( req , res ) => {
+exports.getOneTicket = async (req, res) => {
 
      const ticket = await Ticket.findOne({
-          _id : req.params.id
+          _id: req.params.id
      });
 
      res.status(200).send(objectConvertor.ticketResponse(ticket));
@@ -154,49 +184,66 @@ exports.getOneTicket = async ( req , res ) => {
  * Controller to Update the Ticket
  */
 
-exports.updateTicket = async ( req , res ) => {
+exports.updateTicket = async (req, res) => {
 
-   /**
-    * Check the Ticket exists 
-    */
-   const ticket = await Ticket.findOne({
-      _id : req.params.id
-   });
-   
-   if( ticket == null ){
-     return res.status(200).send({
-          message : "Ticket doesn't exist "
-     })
-   }
+     /**
+      * Check the Ticket exists 
+      */
+     const ticket = await Ticket.findOne({
+          _id: req.params.id
+     });
 
-   /**
-    * Only the Ticket Requester be allowed to update the Ticket
-    */
-   const user = await User.findOne({
-     userId : req.userId
-   })
+     if (ticket == null) {
+          return res.status(200).send({
+               message: "Ticket doesn't exist "
+          })
+     }
 
-   if( !user.ticketsCreated.includes( req.params.id ) ){
-     return res.status(403).send({
-          message : "Only Owner of the Ticket is allowed to Update Ticket "
-     })
-   }
-   /**
-    * Update the Attributes of the Saved Ticket 
-    */
-   ticket.title = ( req.body.title != undefined ) ? req.body.title : ticket.title;
-   ticket.description = ( req.body.description != undefined ) ? req.body.description : ticket.description;
-   ticket.ticketPriority = ( req.body.ticketPriority != undefined ) ? req.body.ticketPriority : ticket.ticketPriority;
-   ticket.status = ( req.body.status != undefined ) ? req.body.status : ticket.status;
+     try {
 
-   /**
-    * Saved the Changed Ticket
-    */
-   const updatedTicket = await ticket.save();
 
-   /**
-    * Return the Updated Ticket
-    */
-   return res.status(200).send(objectConvertor.ticketResponse(updatedTicket));
+          /**
+           * Only the Ticket Requester be allowed to update the Ticket
+           */
+
+          const user = await User.findOne({
+               userId: req.userId
+          });
+
+          if (!user.ticketsCreated.includes(req.params.id)) {
+               return res.status(403).send({
+                    message: "Only Owner of the Ticket is allowed to Update Ticket "
+               })
+          }
+
+          /**
+          * Update the Attributes of the Saved Ticket 
+          */
+
+          ticket.title = req.body.title != undefined ? req.body.title : ticket.title;
+          ticket.description = req.body.description != undefined ? req.body.description : ticket.description;
+          ticket.ticketPriority = req.body.ticketPriority != undefined ? req.body.ticketPriority : ticket.ticketPriority;
+          ticket.status = req.body.status != undefined ? req.body.status : ticket.status;
+
+          /** 
+          * Saved the Changed Ticket
+          */
+          const updatedTicket = await ticket.save();
+
+          /**  
+           *  Return the Updated Ticket
+           */
+          return res.status(200).send({
+               status: "Ticket Updated successfully !",
+               ticket: objectConvertor.ticketResponse(updatedTicket)
+          });
+     }
+
+     catch (error) {
+          console.log("Ticket was being updated BY Someone , who has not created ticket !");
+          return res.status(403).send({
+               message: "Ticket can be Updated Only by Customer , who created it !"
+          })
+     }
 }
 

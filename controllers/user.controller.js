@@ -67,7 +67,7 @@ async function findAllUsers(req, res){
             users : objectConvertor.userResponse(users)// user Password will not be Returned in response.
         });
     } catch (error) {
-        console.log(err);
+        console.log(error);
         return  res.status(500).send({
             status: 500,
             message : "Internal Error while Fetching all Users."
